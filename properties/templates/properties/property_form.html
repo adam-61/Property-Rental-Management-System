@@ -1,0 +1,220 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}{{ title }} | HavenHues Properties{% endblock %}
+
+{% block content %}
+<div class="profile-container" style="max-width: 720px;">
+    <div style="margin-bottom: 1rem;">
+        <a href="{% url 'my_properties' %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">
+            &larr; Back to My Listings
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">{{ title }}</h1>
+            <p class="card-subtitle">Fill in the property details to showcase your rental listing</p>
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}" class="form-label">Property Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="form-error">{{ form.title.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.property_type.id_for_label }}" class="form-label">Property Type *</label>
+                    {{ form.property_type }}
+                    {% if form.property_type.errors %}
+                        <div class="form-error">{{ form.property_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.price_per_month.id_for_label }}" class="form-label">Monthly Rent ($) *</label>
+                    {{ form.price_per_month }}
+                    {% if form.price_per_month.errors %}
+                        <div class="form-error">{{ form.price_per_month.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.location.id_for_label }}" class="form-label">Location / Address *</label>
+                {{ form.location }}
+                {% if form.location.errors %}
+                    <div class="form-error">{{ form.location.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.bedrooms.id_for_label }}" class="form-label">Bedrooms *</label>
+                    {{ form.bedrooms }}
+                    {% if form.bedrooms.errors %}
+                        <div class="form-error">{{ form.bedrooms.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.bathrooms.id_for_label }}" class="form-label">Bathrooms *</label>
+                    {{ form.bathrooms }}
+                    {% if form.bathrooms.errors %}
+                        <div class="form-error">{{ form.bathrooms.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.area_sqft.id_for_label }}" class="form-label">Area (sqft)</label>
+                    {{ form.area_sqft }}
+                    {% if form.area_sqft.errors %}
+                        <div class="form-error">{{ form.area_sqft.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}" class="form-label">Property Description *</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="form-error">{{ form.description.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <hr class="section-divider">
+
+            <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">🏡 House & Living Information</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Specify detailed house attributes to attract the right tenants</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.furnished_status.id_for_label }}" class="form-label">Furnishing Status</label>
+                    {{ form.furnished_status }}
+                    {% if form.furnished_status.errors %}
+                        <div class="form-error">{{ form.furnished_status.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.parking_info.id_for_label }}" class="form-label">Parking Information</label>
+                    {{ form.parking_info }}
+                    {% if form.parking_info.errors %}
+                        <div class="form-error">{{ form.parking_info.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.year_built.id_for_label }}" class="form-label">Year Built</label>
+                    {{ form.year_built }}
+                    {% if form.year_built.errors %}
+                        <div class="form-error">{{ form.year_built.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.security_deposit.id_for_label }}" class="form-label">Security Deposit ($)</label>
+                    {{ form.security_deposit }}
+                    {% if form.security_deposit.errors %}
+                        <div class="form-error">{{ form.security_deposit.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.utilities_included.id_for_label }}" class="form-label">Utilities Included</label>
+                {{ form.utilities_included }}
+                {% if form.utilities_included.errors %}
+                    <div class="form-error">{{ form.utilities_included.errors.0 }}</div>
+                {% endif %}
+                <p class="form-help">e.g. Water, Sewer, Trash, Gas, High-Speed Internet</p>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.amenities.id_for_label }}" class="form-label">House Amenities & Features</label>
+                {{ form.amenities }}
+                {% if form.amenities.errors %}
+                    <div class="form-error">{{ form.amenities.errors.0 }}</div>
+                {% endif %}
+                <p class="form-help">List amenities separated by commas (e.g. Central AC, Balcony, In-unit Laundry, Dishwasher, Pool, Gym)</p>
+            </div>
+
+            <div class="form-group">
+                <label class="checkbox-label" for="{{ form.pet_friendly.id_for_label }}">
+                    {{ form.pet_friendly }}
+                    <span>🐾 Pet Friendly (Cats and dogs allowed)</span>
+                </label>
+                {% if form.pet_friendly.errors %}
+                    <div class="form-error">{{ form.pet_friendly.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <hr class="section-divider">
+
+            <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">📸 Media & Status</h3>
+
+            <div class="form-group">
+                <label for="{{ form.image.id_for_label }}" class="form-label">Main Property Photo</label>
+                {{ form.image }}
+                {% if form.image.errors %}
+                    <div class="form-error">{{ form.image.errors.0 }}</div>
+                {% endif %}
+                <p class="form-help">This photo is shown as the cover image on listings and the detail page.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="gallery_images" class="form-label">Additional Gallery Photos</label>
+                <input type="file" id="gallery_images" name="gallery_images" class="form-file-input" accept="image/*" multiple>
+                <p class="form-help">Hold Ctrl (or Cmd on Mac) to select several photos at once. You can add more anytime by editing this listing again.</p>
+            </div>
+
+            {% if gallery_images %}
+                <div class="form-group">
+                    <label class="form-label">Current Gallery Photos</label>
+                    <div class="gallery-grid">
+                        {% for photo in gallery_images %}
+                            <div class="gallery-thumb">
+                                <img src="{{ photo.image.url }}" alt="Gallery photo">
+                                <form method="post" action="{% url 'delete_property_image' property.pk photo.pk %}" onsubmit="return confirm('Remove this photo?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="gallery-thumb-remove" title="Remove photo">&times;</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label class="checkbox-label" for="{{ form.is_available.id_for_label }}">
+                    {{ form.is_available }}
+                    <span>Mark as available for rent immediately</span>
+                </label>
+                {% if form.is_available.errors %}
+                    <div class="form-error">{{ form.is_available.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; margin-top: 1.75rem;">
+                <button type="submit" class="btn btn-primary">{{ button_text }}</button>
+                <a href="{% url 'my_properties' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

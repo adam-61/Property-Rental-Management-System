@@ -1,0 +1,276 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}{{ property.title }} | HavenHues Properties{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1rem;">
+    <a href="{% url 'property_list' %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">
+        &larr; Back to all properties
+    </a>
+</div>
+
+<div class="property-detail-layout">
+    <!-- Left Column: Image & Details -->
+    <div>
+        <div class="detail-gallery">
+            {% if property.image %}
+                <img src="{{ property.image.url }}" alt="{{ property.title }}" class="detail-img">
+            {% else %}
+                <div class="property-img-placeholder" style="height: 100%;">
+                    🏠
+                </div>
+            {% endif %}
+        </div>
+
+        {% if gallery_images %}
+            <div class="gallery-grid" style="margin-top: 0.75rem;">
+                {% for photo in gallery_images %}
+                    <a href="{{ photo.image.url }}" target="_blank" class="gallery-thumb-link">
+                        <img src="{{ photo.image.url }}" alt="{{ property.title }} photo" class="gallery-thumb-img">
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+                <div>
+                    <span class="badge badge-available" style="margin-bottom: 0.5rem;">
+                        {{ property.get_property_type_display }}
+                    </span>
+                    <h1 class="card-title" style="font-size: 1.75rem;">{{ property.title }}</h1>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">
+                        📍 {{ property.location }}
+                    </p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 1.85rem; font-weight: 800; color: var(--primary);">
+                        ${{ property.price_per_month }}
+                    </div>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">per month</span>
+                </div>
+            </div>
+
+            <!-- Key Specs -->
+            <div class="specs-grid">
+                <div class="spec-item">
+                    <div class="spec-label">Bedrooms</div>
+                    <div class="spec-val">🛏 {{ property.bedrooms }}</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Bathrooms</div>
+                    <div class="spec-val">🚿 {{ property.bathrooms }}</div>
+                </div>
+                {% if property.area_sqft %}
+                    <div class="spec-item">
+                        <div class="spec-label">Living Area</div>
+                        <div class="spec-val">📐 {{ property.area_sqft }} sqft</div>
+                    </div>
+                {% endif %}
+                <div class="spec-item">
+                    <div class="spec-label">Furnishing</div>
+                    <div class="spec-val" style="font-size: 0.95rem;">🛋 {{ property.get_furnished_status_display }}</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Pets</div>
+                    <div class="spec-val" style="font-size: 0.95rem;">
+                        {% if property.pet_friendly %}🐾 Allowed{% else %}🚫 No Pets{% endif %}
+                    </div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Status</div>
+                    <div class="spec-val" style="font-size: 0.95rem;">
+                        {% if property.is_available %}
+                            <span style="color: var(--success);">Available</span>
+                        {% else %}
+                            <span style="color: var(--text-muted);">Occupied</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.75rem;">About this Property</h3>
+            <div style="color: #334155; line-height: 1.7; white-space: pre-line; margin-bottom: 1.5rem;">
+                {{ property.description }}
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- House & Living Information Section -->
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">🏡 House Information & Features</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="background: var(--bg-main); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Furnishing Status</div>
+                    <div style="font-weight: 700; color: var(--text-main); margin-top: 0.2rem;">{{ property.get_furnished_status_display }}</div>
+                </div>
+
+                {% if property.parking_info %}
+                    <div style="background: var(--bg-main); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Parking</div>
+                        <div style="font-weight: 700; color: var(--text-main); margin-top: 0.2rem;">🚗 {{ property.parking_info }}</div>
+                    </div>
+                {% endif %}
+
+                <div style="background: var(--bg-main); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Pet Policy</div>
+                    <div style="font-weight: 700; color: var(--text-main); margin-top: 0.2rem;">
+                        {% if property.pet_friendly %}🐾 Pets Allowed (Dogs & Cats){% else %}🚫 No Pets Allowed{% endif %}
+                    </div>
+                </div>
+
+                {% if property.year_built %}
+                    <div style="background: var(--bg-main); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Year Built</div>
+                        <div style="font-weight: 700; color: var(--text-main); margin-top: 0.2rem;">🏗 {{ property.year_built }}</div>
+                    </div>
+                {% endif %}
+
+                {% if property.security_deposit %}
+                    <div style="background: var(--bg-main); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Security Deposit</div>
+                        <div style="font-weight: 700; color: var(--primary); margin-top: 0.2rem;">${{ property.security_deposit }}</div>
+                    </div>
+                {% endif %}
+
+                {% if property.utilities_included %}
+                    <div style="background: var(--bg-main); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Utilities Included</div>
+                        <div style="font-weight: 700; color: var(--text-main); margin-top: 0.2rem;">💡 {{ property.utilities_included }}</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if property.amenities %}
+                <div style="margin-top: 1.25rem;">
+                    <div style="font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 0.6rem;">Amenities & Features:</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <span style="display: inline-block; background: var(--primary-light); color: var(--primary); padding: 0.4rem 0.85rem; border-radius: var(--radius-full); font-size: 0.84rem; font-weight: 600;">
+                            ✨ {{ property.amenities }}
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Reviews & Ratings -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.15rem; font-weight: 700;">⭐ Reviews & Ratings</h3>
+                {% if property.average_rating %}
+                    <div>
+                        <span class="rating-stars">{% for i in "12345" %}{% if forloop.counter <= property.average_rating|floatformat:"0" %}★{% else %}☆{% endif %}{% endfor %}</span>
+                        <span style="font-weight: 700; margin-left: 0.35rem;">{{ property.average_rating }}</span>
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">({{ property.review_count }} review{{ property.review_count|pluralize }})</span>
+                    </div>
+                {% else %}
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">No reviews yet</span>
+                {% endif %}
+            </div>
+
+            {% if user.is_authenticated and user != property.owner and user.profile.is_tenant %}
+                {% if can_review %}
+                    <form method="post" action="{% url 'add_review' property.pk %}" style="background: var(--bg-main); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="form-label" for="{{ review_form.rating.id_for_label }}">Your Rating</label>
+                            {{ review_form.rating }}
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="{{ review_form.comment.id_for_label }}">Your Review</label>
+                            {{ review_form.comment }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                    </form>
+                {% elif has_reviewed %}
+                    <div class="alert alert-info">You've already reviewed this property. Thank you!</div>
+                {% endif %}
+            {% endif %}
+
+            {% if property.reviews.all %}
+                {% for review in property.reviews.all %}
+                    <div class="review-item">
+                        <div class="review-item-header">
+                            <span class="review-author">{{ review.tenant.first_name|default:review.tenant.username }}</span>
+                            <span class="rating-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+                        </div>
+                        <div class="review-date">{{ review.created_at|date:"M d, Y" }}</div>
+                        <p class="review-comment">{{ review.comment }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Be the first to review this property once your rental request is accepted.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Column: Owner info & Action Card -->
+    <div>
+        <div class="card" style="position: sticky; top: 5rem;">
+            <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 1.25rem;">Property Management</h3>
+
+            <!-- Owner Info Card -->
+            <div style="display: flex; align-items: center; gap: 0.85rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.25rem;">
+                {% if property.owner.profile.avatar %}
+                    <img src="{{ property.owner.profile.avatar.url }}" alt="{{ property.owner.username }}" style="width: 48px; height: 48px; border-radius: var(--radius-full); object-fit: cover;">
+                {% else %}
+                    <div style="width: 48px; height: 48px; border-radius: var(--radius-full); background-color: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                        {{ property.owner.username|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+                <div>
+                    <div style="font-weight: 700; font-size: 0.95rem;">{{ property.owner.first_name }} {{ property.owner.last_name|default:property.owner.username }}</div>
+                    <span class="user-role-badge role-owner" style="font-size: 0.68rem;">Property Owner</span>
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+                {% if user == property.owner %}
+                    <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">You are the owner of this listing.</p>
+                        <a href="{% url 'edit_property' property.pk %}" class="btn btn-primary btn-block">Edit Listing</a>
+                        <a href="{% url 'delete_property' property.pk %}" class="btn btn-danger-outline btn-block">Delete Listing</a>
+                    </div>
+                {% elif user.profile.is_owner %}
+                    <div class="alert alert-info">
+                        <strong>Property Owner Account</strong>
+                        <p style="font-size: 0.85rem; margin-top: 0.35rem;">You are logged in as a Property Owner. Rental applications are submitted by Tenant accounts.</p>
+                    </div>
+                {% else %}
+                    {% if user_request %}
+                        <div class="alert alert-info" style="margin-bottom: 1rem;">
+                            <strong>Your Application Status:</strong>
+                            <div style="margin-top: 0.4rem;">
+                                <span class="badge badge-{{ user_request.status }}">{{ user_request.get_status_display }}</span>
+                            </div>
+                        </div>
+                        <a href="{% url 'my_requests' %}" class="btn btn-outline btn-block">View My Requests</a>
+                    {% else %}
+                        {% if property.is_available %}
+                            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Interested in this home? Submit a rental request to the owner.
+                            </p>
+                            <a href="{% url 'send_request' property.pk %}" class="btn btn-primary btn-block">
+                                Send Rental Request
+                            </a>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                This property is currently not accepting new rental requests.
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Sign in or register as a Tenant to send rental applications for this property.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-block">Sign In to Apply</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline btn-block">Create an Account</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

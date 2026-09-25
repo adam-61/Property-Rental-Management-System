@@ -1,0 +1,140 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Manage Profile | HavenHues Properties{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+
+    <!-- Profile Summary Header Card -->
+    <div class="profile-header-card">
+        {% if profile.avatar %}
+            <img src="{{ profile.avatar.url }}" alt="{{ user.username }}'s avatar" class="profile-avatar-large">
+        {% else %}
+            <div class="profile-avatar-large">
+                {{ user.username|slice:":1"|upper }}
+            </div>
+        {% endif %}
+        <div class="profile-details">
+            <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+            <div class="profile-username">@{{ user.username }}</div>
+            <div class="profile-meta-badges">
+                <span class="user-role-badge {% if user.profile.is_owner %}role-owner{% endif %}">{{ user.profile.get_role_display }}</span>
+                <span class="meta-badge">✉ {{ user.email|default:"No email" }}</span>
+                {% if profile.location %}
+                    <span class="meta-badge">📍 {{ profile.location }}</span>
+                {% endif %}
+                <span class="meta-badge">Joined {{ user.date_joined|date:"M Y" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Card -->
+    <div class="card">
+        <div class="card-header" style="text-align: left; margin-bottom: 1.5rem;">
+            <h2 class="card-title" style="font-size: 1.3rem;">Edit Profile Information</h2>
+            <p class="card-subtitle">Update your personal details, email, and biography below</p>
+        </div>
+
+        {% if u_form.non_field_errors %}
+            <div class="alert alert-error">
+                {% for error in u_form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if p_form.non_field_errors %}
+            <div class="alert alert-error">
+                {% for error in p_form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <h3 style="font-size: 1rem; font-weight: 700; color: #334155; margin-bottom: 1rem;">Account Information</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ u_form.first_name.id_for_label }}" class="form-label">First Name</label>
+                    {{ u_form.first_name }}
+                    {% if u_form.first_name.errors %}
+                        <div class="form-error">{{ u_form.first_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ u_form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                    {{ u_form.last_name }}
+                    {% if u_form.last_name.errors %}
+                        <div class="form-error">{{ u_form.last_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ u_form.username.id_for_label }}" class="form-label">Username *</label>
+                    {{ u_form.username }}
+                    {% if u_form.username.errors %}
+                        <div class="form-error">{{ u_form.username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ u_form.email.id_for_label }}" class="form-label">Email Address *</label>
+                    {{ u_form.email }}
+                    {% if u_form.email.errors %}
+                        <div class="form-error">{{ u_form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <h3 style="font-size: 1rem; font-weight: 700; color: #334155; margin-bottom: 1rem;">Profile Details</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ p_form.location.id_for_label }}" class="form-label">Location</label>
+                    {{ p_form.location }}
+                    {% if p_form.location.errors %}
+                        <div class="form-error">{{ p_form.location.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ p_form.phone.id_for_label }}" class="form-label">Phone Number</label>
+                    {{ p_form.phone }}
+                    {% if p_form.phone.errors %}
+                        <div class="form-error">{{ p_form.phone.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ p_form.avatar.id_for_label }}" class="form-label">Profile Picture</label>
+                {{ p_form.avatar }}
+                {% if p_form.avatar.errors %}
+                    <div class="form-error">{{ p_form.avatar.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ p_form.bio.id_for_label }}" class="form-label">Bio / About</label>
+                {{ p_form.bio }}
+                {% if p_form.bio.errors %}
+                    <div class="form-error">{{ p_form.bio.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; margin-top: 1.75rem;">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{% url 'home' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

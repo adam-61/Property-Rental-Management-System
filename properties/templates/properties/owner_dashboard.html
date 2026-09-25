@@ -1,0 +1,80 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Owner Dashboard | HavenHues Properties{% endblock %}
+
+{% block content %}
+<div class="card-header">
+    <h1 class="card-title" style="font-size: 1.75rem;">Owner Dashboard</h1>
+    <p class="card-subtitle">Welcome back, {{ user.first_name|default:user.username }}. Here's how your listings are doing.</p>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total_properties }}</div>
+        <div class="stat-label">Total Properties</div>
+    </div>
+    <div class="stat-card stat-success">
+        <div class="stat-value">{{ available_properties }}</div>
+        <div class="stat-label">Available</div>
+    </div>
+    <div class="stat-card stat-accent">
+        <div class="stat-value">{{ total_requests }}</div>
+        <div class="stat-label">Total Requests</div>
+    </div>
+    <div class="stat-card stat-warning">
+        <div class="stat-value">{{ pending_requests }}</div>
+        <div class="stat-label">Pending Requests</div>
+    </div>
+    <div class="stat-card stat-success">
+        <div class="stat-value">{{ accepted_requests }}</div>
+        <div class="stat-label">Accepted Requests</div>
+    </div>
+    <div class="stat-card stat-danger">
+        <div class="stat-value">{{ rejected_requests }}</div>
+        <div class="stat-label">Rejected Requests</div>
+    </div>
+</div>
+
+<div style="display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
+    <a href="{% url 'add_property' %}" class="btn btn-primary">+ Add New Property</a>
+    <a href="{% url 'my_properties' %}" class="btn btn-outline">Manage My Properties</a>
+    <a href="{% url 'incoming_requests' %}" class="btn btn-outline">Manage Rental Requests</a>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem;">
+    <h3 class="dashboard-section-title">Your Recent Properties</h3>
+    {% if recent_properties %}
+        {% for property in recent_properties %}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0; border-bottom: 1px solid var(--border-color);">
+                <div>
+                    <a href="{% url 'property_detail' property.pk %}" style="font-weight: 600; color: var(--text-main); text-decoration: none;">{{ property.title }}</a>
+                    <div style="font-size: 0.82rem; color: var(--text-muted);">{{ property.location }} &middot; ${{ property.price_per_month }}/mo</div>
+                </div>
+                <span class="badge {% if property.is_available %}badge-available{% else %}badge-unavailable{% endif %}">
+                    {% if property.is_available %}Available{% else %}Occupied{% endif %}
+                </span>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: var(--text-muted); font-size: 0.9rem;">You haven't listed any properties yet.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3 class="dashboard-section-title">Recent Rental Requests</h3>
+    {% if recent_requests %}
+        {% for req in recent_requests %}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0; border-bottom: 1px solid var(--border-color);">
+                <div>
+                    <span style="font-weight: 600;">{{ req.tenant.username }}</span>
+                    <span style="color: var(--text-muted);"> requested </span>
+                    <a href="{% url 'property_detail' req.property.pk %}" style="color: var(--text-main); text-decoration: none; font-weight: 600;">{{ req.property.title }}</a>
+                </div>
+                <span class="badge badge-{{ req.status }}">{{ req.get_status_display }}</span>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: var(--text-muted); font-size: 0.9rem;">No rental requests yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

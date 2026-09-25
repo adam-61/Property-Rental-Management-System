@@ -1,0 +1,88 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}My Property Listings | HavenHues Properties{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h1 class="card-title" style="margin-bottom: 0.25rem;">My Property Listings</h1>
+        <p class="card-subtitle">Manage your inventory, pricing, and availability</p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        <a href="{% url 'incoming_requests' %}" class="btn btn-outline">Incoming Requests</a>
+        <a href="{% url 'add_property' %}" class="btn btn-primary">+ Add New Property</a>
+    </div>
+</div>
+
+{% if properties %}
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Monthly Rent</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Requests</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prop in properties %}
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    {% if prop.image %}
+                                        <img src="{{ prop.image.url }}" alt="{{ prop.title }}" style="width: 48px; height: 48px; border-radius: var(--radius-sm); object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                            🏠
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <a href="{% url 'property_detail' prop.pk %}" style="font-weight: 700; color: var(--text-main); text-decoration: none;">
+                                            {{ prop.title }}
+                                        </a>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">{{ prop.bedrooms }} Bed · {{ prop.bathrooms }} Bath</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ prop.get_property_type_display }}</td>
+                            <td style="font-weight: 700; color: var(--primary);">${{ prop.price_per_month }}</td>
+                            <td>{{ prop.location }}</td>
+                            <td>
+                                {% if prop.is_available %}
+                                    <span class="badge badge-available">Available</span>
+                                {% else %}
+                                    <span class="badge badge-unavailable">Occupied</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'incoming_requests' %}" style="text-decoration: none; font-weight: 600; color: var(--accent);">
+                                    {{ prop.rental_requests.count }} request{{ prop.rental_requests.count|pluralize }}
+                                </a>
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="display: inline-flex; gap: 0.4rem;">
+                                    <a href="{% url 'property_detail' prop.pk %}" class="btn btn-outline btn-sm">View</a>
+                                    <a href="{% url 'edit_property' prop.pk %}" class="btn btn-outline btn-sm">Edit</a>
+                                    <a href="{% url 'delete_property' prop.pk %}" class="btn btn-danger-outline btn-sm">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 3.5rem 1.5rem;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🏡</div>
+        <h3 class="card-title">You haven't added any properties yet</h3>
+        <p class="card-subtitle" style="margin-bottom: 1.5rem;">Create your first real estate listing and start receiving rental requests from verified tenants.</p>
+        <a href="{% url 'add_property' %}" class="btn btn-primary">+ Add Your First Property</a>
+    </div>
+{% endif %}
+{% endblock %}

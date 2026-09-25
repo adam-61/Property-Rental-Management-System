@@ -1,0 +1,123 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Browse Properties | HavenHues Properties{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h1 class="card-title" style="margin-bottom: 0.25rem;">Available Properties for Rent</h1>
+        <p class="card-subtitle">Showing {{ total_count }} verified listings</p>
+    </div>
+    {% if user.is_authenticated and user.profile.is_owner %}
+        <a href="{% url 'add_property' %}" class="btn btn-primary">+ Add New Property</a>
+    {% endif %}
+</div>
+
+<!-- Search and Filter Bar (Pure HTML GET form) -->
+<div class="filter-card">
+    <form method="GET" action="{% url 'property_list' %}" novalidate>
+        <div class="filter-grid">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-size: 0.8rem;">Keyword</label>
+                {{ form.q }}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-size: 0.8rem;">Location</label>
+                {{ form.location }}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-size: 0.8rem;">Property Type</label>
+                {{ form.property_type }}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-size: 0.8rem;">Furnishing</label>
+                {{ form.furnished_status }}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-size: 0.8rem;">Min Price ($)</label>
+                {{ form.min_price }}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-size: 0.8rem;">Max Price ($)</label>
+                {{ form.max_price }}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" style="font-size: 0.8rem;">Min Beds</label>
+                {{ form.bedrooms }}
+            </div>
+            <div class="form-group" style="margin-bottom: 0; display: flex; align-items: center; padding-bottom: 0.5rem;">
+                <label class="checkbox-label" for="{{ form.pet_friendly.id_for_label }}" style="font-size: 0.82rem; font-weight: 600;">
+                    {{ form.pet_friendly }}
+                    <span>🐾 Pet Friendly</span>
+                </label>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">Filter</button>
+                <a href="{% url 'property_list' %}" class="btn btn-outline" style="flex: 1;">Reset</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Property Grid -->
+{% if properties %}
+    <div class="property-grid">
+        {% for prop in properties %}
+            <div class="property-card">
+                <div class="property-img-wrap">
+                    {% if prop.image %}
+                        <img src="{{ prop.image.url }}" alt="{{ prop.title }}" class="property-img">
+                    {% else %}
+                        <div class="property-img-placeholder">
+                            🏠
+                        </div>
+                    {% endif %}
+                    <span class="property-tag-top">{{ prop.get_property_type_display }}</span>
+                    <span class="property-status-top">
+                        {% if prop.is_available %}
+                            <span class="badge badge-available">Available</span>
+                        {% else %}
+                            <span class="badge badge-unavailable">Occupied</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="property-body">
+                    <div class="property-price">${{ prop.price_per_month }} <span>/ month</span></div>
+                    <h2 class="property-card-title">{{ prop.title }}</h2>
+                    <div class="property-location">📍 {{ prop.location }}</div>
+
+                    <div class="property-features">
+                        <span>🛏 {{ prop.bedrooms }} Bed{{ prop.bedrooms|pluralize }}</span>
+                        <span>🚿 {{ prop.bathrooms }} Bath{{ prop.bathrooms|pluralize }}</span>
+                        {% if prop.area_sqft %}
+                            <span>📐 {{ prop.area_sqft }} sqft</span>
+                        {% endif %}
+                        {% if prop.pet_friendly %}
+                            <span>🐾 Pets OK</span>
+                        {% endif %}
+                    </div>
+
+                    <p style="color: var(--text-muted); font-size: 0.86rem; margin-bottom: 1rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                        {{ prop.description }}
+                    </p>
+
+                    <div class="property-footer">
+                        <span style="font-size: 0.78rem; color: var(--text-muted);">
+                            Owner: <strong>{{ prop.owner.username }}</strong>
+                        </span>
+                        <a href="{% url 'property_detail' prop.pk %}" class="btn btn-outline btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 3rem 1.5rem; margin-top: 1.5rem;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🏘️</div>
+        <h3 class="card-title">No Properties Found</h3>
+        <p class="card-subtitle" style="margin-bottom: 1.5rem;">We couldn't find any properties matching your current filter criteria.</p>
+        <a href="{% url 'property_list' %}" class="btn btn-outline">Clear Filters</a>
+    </div>
+{% endif %}
+{% endblock %}

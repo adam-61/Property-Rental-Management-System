@@ -1,0 +1,54 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Sign In | HavenHues Properties{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">Sign In</h1>
+            <p class="card-subtitle">Enter your credentials to access your account</p>
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" novalidate>
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="{{ form.username.id_for_label }}" class="form-input" placeholder="Enter username" value="{{ form.username.value|default:'' }}">
+                {% if form.username.errors %}
+                    <div class="form-error">{{ form.username.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                <input type="password" name="password" autocomplete="current-password" required id="{{ form.password.id_for_label }}" class="form-input" placeholder="Enter password">
+                {% if form.password.errors %}
+                    <div class="form-error">{{ form.password.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
+
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </div>
+        </form>
+
+        <div class="auth-footer">
+            Don't have an account yet? <a href="{% url 'register' %}">Create one</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

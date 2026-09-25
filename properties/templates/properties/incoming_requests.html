@@ -1,0 +1,118 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Incoming Rental Requests | HavenHues Properties{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h1 class="card-title" style="margin-bottom: 0.25rem;">Incoming Rental Requests</h1>
+        <p class="card-subtitle">Review prospective tenants and manage lease applications for your properties</p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        <a href="{% url 'my_properties' %}" class="btn btn-outline">My Properties</a>
+        <a href="{% url 'add_property' %}" class="btn btn-primary">+ Add Property</a>
+    </div>
+</div>
+
+{% if requests_list %}
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Applicant</th>
+                        <th>Move-In Date</th>
+                        <th>Lease Term</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Decision</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests_list %}
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    {% if req.property.image %}
+                                        <img src="{{ req.property.image.url }}" alt="{{ req.property.title }}" style="width: 44px; height: 44px; border-radius: var(--radius-sm); object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                                            🏠
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <a href="{% url 'property_detail' req.property.pk %}" style="font-weight: 700; color: var(--text-main); text-decoration: none;">
+                                            {{ req.property.title }}
+                                        </a>
+                                        <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">${{ req.property.price_per_month }}/mo</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                                    {% if req.tenant.profile.avatar %}
+                                        <img src="{{ req.tenant.profile.avatar.url }}" alt="{{ req.tenant.username }}" style="width: 34px; height: 34px; border-radius: var(--radius-full); object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 34px; height: 34px; border-radius: var(--radius-full); background: #e0e7ff; color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">
+                                            {{ req.tenant.username|slice:":1"|upper }}
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 0.9rem;">
+                                            {{ req.tenant.first_name }} {{ req.tenant.last_name|default:req.tenant.username }}
+                                        </div>
+                                        <div style="font-size: 0.78rem; color: var(--text-muted);">
+                                            {{ req.tenant.email|default:"No email" }}
+                                            {% if req.tenant.profile.phone %} · {{ req.tenant.profile.phone }}{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ req.move_in_date|date:"M d, Y" }}</td>
+                            <td>{{ req.lease_duration_months }} months</td>
+                            <td style="max-width: 240px;">
+                                {% if req.message %}
+                                    <span style="font-size: 0.85rem; color: #475569; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                        "{{ req.message }}"
+                                    </span>
+                                {% else %}
+                                    <span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">No message provided</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ req.status }}">
+                                    {{ req.get_status_display }}
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                {% if req.status == 'pending' %}
+                                    <div style="display: inline-flex; gap: 0.4rem;">
+                                        <a href="{% url 'accept_request' req.pk %}" class="btn btn-primary btn-sm" style="background-color: var(--success); border-color: var(--success);">
+                                            Accept
+                                        </a>
+                                        <a href="{% url 'reject_request' req.pk %}" class="btn btn-danger-outline btn-sm">
+                                            Reject
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <span style="font-size: 0.82rem; color: var(--text-muted);">
+                                        Processed
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 3.5rem 1.5rem;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📬</div>
+        <h3 class="card-title">No Rental Applications Yet</h3>
+        <p class="card-subtitle" style="margin-bottom: 1.5rem;">When prospective tenants apply to rent your properties, their applications will appear here for your review.</p>
+        <a href="{% url 'my_properties' %}" class="btn btn-outline">View My Properties</a>
+    </div>
+{% endif %}
+{% endblock %}

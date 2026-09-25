@@ -1,0 +1,55 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Tenant Dashboard | HavenHues Properties{% endblock %}
+
+{% block content %}
+<div class="card-header">
+    <h1 class="card-title" style="font-size: 1.75rem;">Tenant Dashboard</h1>
+    <p class="card-subtitle">Welcome back, {{ user.first_name|default:user.username }}. Here's the status of your rental applications.</p>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card stat-accent">
+        <div class="stat-value">{{ total_requests }}</div>
+        <div class="stat-label">Total Requests</div>
+    </div>
+    <div class="stat-card stat-warning">
+        <div class="stat-value">{{ pending_requests }}</div>
+        <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card stat-success">
+        <div class="stat-value">{{ accepted_requests }}</div>
+        <div class="stat-label">Accepted</div>
+    </div>
+    <div class="stat-card stat-danger">
+        <div class="stat-value">{{ rejected_requests }}</div>
+        <div class="stat-label">Rejected</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ cancelled_requests }}</div>
+        <div class="stat-label">Cancelled</div>
+    </div>
+</div>
+
+<div style="display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
+    <a href="{% url 'property_list' %}" class="btn btn-primary">Browse Properties</a>
+    <a href="{% url 'my_requests' %}" class="btn btn-outline">View All My Requests</a>
+</div>
+
+<div class="card">
+    <h3 class="dashboard-section-title">Recent Requests</h3>
+    {% if recent_requests %}
+        {% for req in recent_requests %}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0; border-bottom: 1px solid var(--border-color);">
+                <div>
+                    <a href="{% url 'property_detail' req.property.pk %}" style="font-weight: 600; color: var(--text-main); text-decoration: none;">{{ req.property.title }}</a>
+                    <div style="font-size: 0.82rem; color: var(--text-muted);">{{ req.property.location }} &middot; Owner: {{ req.property.owner.username }}</div>
+                </div>
+                <span class="badge badge-{{ req.status }}">{{ req.get_status_display }}</span>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: var(--text-muted); font-size: 0.9rem;">You haven't sent any rental requests yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

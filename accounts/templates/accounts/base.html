@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HavenHues Properties{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="nav-brand">
+                <span class="brand-icon">🏠</span> HavenHues Properties
+            </a>
+
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="{% url 'property_list' %}" class="nav-link">Browse Properties</a></li>
+
+                    {% if user.is_authenticated %}
+                        {% if user.profile.is_owner %}
+                            <li><a href="{% url 'owner_dashboard' %}" class="nav-link">Dashboard</a></li>
+                            <li><a href="{% url 'my_properties' %}" class="nav-link">My Listings</a></li>
+                            <li><a href="{% url 'add_property' %}" class="btn btn-primary btn-sm">+ Add Property</a></li>
+                            <li><a href="{% url 'incoming_requests' %}" class="nav-link">Rental Requests</a></li>
+                        {% else %}
+                            <li><a href="{% url 'tenant_dashboard' %}" class="nav-link">Dashboard</a></li>
+                            <li><a href="{% url 'my_requests' %}" class="nav-link">My Requests</a></li>
+                        {% endif %}
+
+                        <li><a href="{% url 'profile' %}" class="nav-link">Profile</a></li>
+
+                        {% if user.is_staff %}
+                            <li><a href="/admin/" class="nav-link" target="_blank">Admin</a></li>
+                        {% endif %}
+
+                        <li class="nav-user">
+                            <span class="user-role-badge {% if user.profile.is_owner %}role-owner{% endif %}">
+                                {{ user.profile.get_role_display|default:"User" }}
+                            </span>
+                            <span style="font-size: 0.9rem; font-weight: 600;">{{ user.username }}</span>
+                            <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                        </li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}" class="nav-link">Sign In</a></li>
+                        <li><a href="{% url 'register' %}" class="btn btn-primary btn-sm">Register</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+        <!-- Django Flash Messages -->
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 HavenHues Properties. Simple, reliable real estate rentals.</p>
+    </footer>
+
+</body>
+</html>

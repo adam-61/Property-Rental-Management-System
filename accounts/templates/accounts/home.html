@@ -1,0 +1,93 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}HavenHues Properties | Modern Rental Living{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <div class="card hero-card" style="text-align: left; padding: 2.25rem;">
+        <span class="hero-badge">{{ user.profile.get_role_display }} Dashboard</span>
+        <h1 class="hero-title" style="font-size: 1.85rem;">Welcome back, {{ user.first_name|default:user.username }}!</h1>
+        <p class="hero-subtitle" style="margin: 0 0 1.5rem 0; max-width: 100%;">
+            {% if user.profile.is_owner %}
+                Manage your real estate listings, review incoming rental applications from prospective tenants, and update property details.
+            {% else %}
+                Discover your next dream home, explore verified rental listings, and track your active rental applications.
+            {% endif %}
+        </p>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            {% if user.profile.is_owner %}
+                <a href="{% url 'owner_dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                <a href="{% url 'add_property' %}" class="btn btn-outline">+ Add New Property</a>
+                <a href="{% url 'my_properties' %}" class="btn btn-outline">My Property Listings</a>
+                <a href="{% url 'incoming_requests' %}" class="btn btn-outline">Incoming Rental Requests</a>
+            {% else %}
+                <a href="{% url 'tenant_dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                <a href="{% url 'property_list' %}" class="btn btn-outline">Browse Available Properties</a>
+                <a href="{% url 'my_requests' %}" class="btn btn-outline">My Rental Requests</a>
+            {% endif %}
+            <a href="{% url 'profile' %}" class="btn btn-outline">Account Settings</a>
+        </div>
+    </div>
+
+    <div class="dashboard-grid" style="margin-top: 1.5rem;">
+        <div class="card">
+            <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 1rem;">Profile Overview</h3>
+            <table class="info-table">
+                <tr>
+                    <td>Username:</td>
+                    <td>{{ user.username }}</td>
+                </tr>
+                <tr>
+                    <td>Role:</td>
+                    <td><span class="user-role-badge {% if user.profile.is_owner %}role-owner{% endif %}">{{ user.profile.get_role_display }}</span></td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td>{{ user.email|default:"Not specified" }}</td>
+                </tr>
+                <tr>
+                    <td>Location:</td>
+                    <td>{{ user.profile.location|default:"Not specified" }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 1rem;">Quick Navigation</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                {% if user.profile.is_owner %}
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">
+                        You are registered as a <strong>Property Owner</strong>. You have full control over your rental inventory and tenant approvals.
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                        <a href="{% url 'my_properties' %}" class="btn btn-outline btn-sm">View My Properties</a>
+                        <a href="{% url 'incoming_requests' %}" class="btn btn-outline btn-sm">Review Applications</a>
+                    </div>
+                {% else %}
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">
+                        You are registered as a <strong>Tenant</strong>. Browse through verified rental properties and submit rental applications.
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                        <a href="{% url 'property_list' %}" class="btn btn-primary btn-sm">Explore Homes for Rent</a>
+                        <a href="{% url 'my_requests' %}" class="btn btn-outline btn-sm">Track Applications</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card hero-card">
+        <span class="hero-badge">HavenHues Properties</span>
+        <h1 class="hero-title">Find Your Perfect Rental Home</h1>
+        <p class="hero-subtitle">
+            A seamless marketplace connecting Property Owners with Tenants. List properties, browse verified rentals, and manage rental requests with ease.
+        </p>
+        <div class="hero-actions">
+            <a href="{% url 'property_list' %}" class="btn btn-primary">Browse Properties</a>
+            <a href="{% url 'register' %}" class="btn btn-outline">Join as Owner or Tenant</a>
+            <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

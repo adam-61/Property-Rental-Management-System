@@ -1,0 +1,68 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}
+    {% if action == 'accept' %}Accept{% else %}Reject{% endif %} Rental Request | HavenHues Properties
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="card" {% if action == 'reject' %}style="border-color: var(--danger-border);"{% endif %}>
+        <div class="card-header">
+            {% if action == 'accept' %}
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--success);">✅</div>
+                <h1 class="card-title">Accept Rental Request</h1>
+                <p class="card-subtitle">Are you sure you want to approve this tenant application?</p>
+            {% else %}
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--danger);">❌</div>
+                <h1 class="card-title">Reject Rental Request</h1>
+                <p class="card-subtitle">Are you sure you want to decline this tenant application?</p>
+            {% endif %}
+        </div>
+
+        <div style="background-color: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border-color); text-align: left;">
+            <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.25rem;">Property</div>
+            <div style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); margin-bottom: 0.75rem;">
+                {{ rental_req.property.title }}
+            </div>
+
+            <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.25rem;">Applicant</div>
+            <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">
+                {{ rental_req.tenant.first_name }} {{ rental_req.tenant.last_name|default:rental_req.tenant.username }} (@{{ rental_req.tenant.username }})
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                {{ rental_req.tenant.email|default:"No email" }}
+                {% if rental_req.tenant.profile.phone %} · {{ rental_req.tenant.profile.phone }}{% endif %}
+            </div>
+
+            <div style="display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-main); border-top: 1px dashed var(--border-color); padding-top: 0.75rem;">
+                <div><strong>Move-in:</strong> {{ rental_req.move_in_date|date:"M d, Y" }}</div>
+                <div><strong>Lease:</strong> {{ rental_req.lease_duration_months }} Months</div>
+            </div>
+
+            {% if rental_req.message %}
+                <div style="margin-top: 0.75rem; font-size: 0.85rem; color: #475569; font-style: italic; background: #ffffff; padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                    "{{ rental_req.message }}"
+                </div>
+            {% endif %}
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div style="display: flex; gap: 0.75rem;">
+                {% if action == 'accept' %}
+                    <button type="submit" class="btn btn-primary" style="flex: 1; background-color: var(--success); border-color: var(--success);">
+                        Yes, Accept Application
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-danger" style="flex: 1;">
+                        Yes, Reject Application
+                    </button>
+                {% endif %}
+                <a href="{% url 'incoming_requests' %}" class="btn btn-outline" style="flex: 1; text-align: center;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

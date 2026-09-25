@@ -1,0 +1,40 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Cancel Rental Request | HavenHues Properties{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="card" style="border-color: var(--danger-border);">
+        <div class="card-header">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--danger);">⚠️</div>
+            <h1 class="card-title">Cancel Rental Request</h1>
+            <p class="card-subtitle">Are you sure you want to withdraw your rental application?</p>
+        </div>
+
+        <div style="background-color: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border-color);">
+            <div style="font-weight: 700; font-size: 1.05rem; color: var(--text-main);">{{ rental_req.property.title }}</div>
+            <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem;">📍 {{ rental_req.property.location }}</div>
+            <div style="font-size: 0.88rem; color: var(--primary); font-weight: 600; margin-top: 0.25rem;">
+                ${{ rental_req.property.price_per_month }}/mo · Move-in: {{ rental_req.move_in_date|date:"M d, Y" }} ({{ rental_req.lease_duration_months }} mos)
+            </div>
+            {% if rental_req.message %}
+                <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--border-color); font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+                    "{{ rental_req.message }}"
+                </div>
+            {% endif %}
+        </div>
+
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            Cancelling this application will notify the property owner that you are no longer seeking this property.
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div style="display: flex; gap: 0.75rem;">
+                <button type="submit" class="btn btn-danger" style="flex: 1;">Yes, Cancel Request</button>
+                <a href="{% url 'my_requests' %}" class="btn btn-outline" style="flex: 1; text-align: center;">Keep Request</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
