@@ -1,4 +1,4 @@
-# HavenHues Properties — Property Rental & Management System
+# Django Property Rental & Management System
 
 A Django-based web application where **Property Owners** can list properties for rent and
 **Tenants** can browse listings and send rental requests. Built to demonstrate Django CRUD,
@@ -86,7 +86,7 @@ Users, Profiles, Properties, Rental Requests, and Reviews are all registered wit
 - Django 6.1
 - SQLite (default dev database)
 - Pillow (image uploads)
-- Server-rendered Django templates + hand-written CSS (no frontend framework/JS required)
+- Server-rendered Django templates (no frontend framework/JS required)
 
 ## Project Structure
 ```
